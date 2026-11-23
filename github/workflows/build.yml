@@ -1,4 +1,4 @@
-name: Build WASEL GO APK
+name: WASEL GO APK  Builder
 
 on:
   workflow_dispatch:
