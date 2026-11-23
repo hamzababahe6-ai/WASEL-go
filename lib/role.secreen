@@ -1,0 +1,71 @@
+mport 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
+
+class RoleScreen extends StatelessWidget {
+  const RoleScreen({super.key, required this.role});
+  final String role;
+
+  @override
+  Widget build(BuildContext context) {
+    final isCustomer = role == 'العميل';
+    final isDriver = role == 'السائق';
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(title: Text('واصل GO - $role')),
+        body: ListView(
+          padding: const EdgeInsets.all(18),
+          children: [
+            Card(child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(isCustomer ? 'اطلب رحلتك' : isDriver ? 'مساحة السائق' : 'لوحة الإدارة',
+                  style: const TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: AppTheme.navy)),
+                const SizedBox(height: 8),
+                Text(isCustomer
+                  ? 'حدد نقطة الانطلاق والوجهة، ثم اطلب سيارة.'
+                  : isDriver ? 'تابع طلبات الرحلات وحالة عملك.'
+                  : 'تابع الرحلات والسائقين والإيرادات من مكان واحد.'),
+              ]),
+            )),
+            const SizedBox(height: 14),
+            if (isCustomer) ...[
+              const _InfoTile(icon: Icons.my_location, title: 'موقع الانطلاق', subtitle: 'سيتم تفعيل تحديد الموقع والخريطة في المرحلة التالية'),
+              const _InfoTile(icon: Icons.location_on, title: 'الوجهة', subtitle: 'اختر وجهتك على الخريطة عند ربط خدمة الخرائط'),
+              const _InfoTile(icon: Icons.payments, title: 'تقدير السعر', subtitle: 'التسعير التجريبي: 260 MRU لكل 10 كم'),
+              ElevatedButton(onPressed: () => _message(context, 'واجهة الطلب جاهزة مبدئياً؛ ربط الرحلات يحتاج إعداد الخادم وقاعدة البيانات.'), child: const Text('طلب رحلة تجريبية')),
+            ] else if (isDriver) ...[
+              const _InfoTile(icon: Icons.notifications_active, title: 'طلبات الرحلات', subtitle: 'ستظهر الطلبات الجديدة بعد ربط قاعدة البيانات'),
+              const _InfoTile(icon: Icons.map, title: 'موقعي على الخريطة', subtitle: 'يتطلب تفعيل GPS وخدمة الخرائط'),
+              ElevatedButton(onPressed: () => _message(context, 'واجهة السائق جاهزة مبدئياً؛ استقبال الطلبات المباشر لم يُربط بعد.'), child: const Text('تفعيل حالة الاستعداد')),
+            ] else ...[
+              const _InfoTile(icon: Icons.directions_car, title: 'إجمالي الرحلات', subtitle: 'سيظهر بعد ربط قاعدة البيانات'),
+              const _InfoTile(icon: Icons.people, title: 'السائقون والعملاء', subtitle: 'إدارة الحسابات قيد الإعداد'),
+              const _InfoTile(icon: Icons.bar_chart, title: 'الإيرادات والعمولات', subtitle: 'التقارير ستُحسب من الرحلات الفعلية'),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _message(BuildContext context, String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text), duration: const Duration(seconds: 4)));
+  }
+}
+
+class _InfoTile extends StatelessWidget {
+  const _InfoTile({required this.icon, required this.title, required this.subtitle});
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) => Card(
+    child: ListTile(
+      leading: CircleAvatar(backgroundColor: AppTheme.pale, child: Icon(icon, color: AppTheme.navy)),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+      subtitle: Text(subtitle),
+    ),
+  );
+}
